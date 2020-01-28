@@ -1,49 +1,100 @@
-P(xs) = head (scanr f e xs) = foldr f e xs
-Case 1: P([])
-    Left:
-        head (scanr f e [])
-        = {scanr.1}
-        head [e]
-        = {head.2}
-        e
-    Right:
-        foldr f e []
-        = {foldr.1}
-        e
-Case 2: P(x:xs)
-    Left:
-        head (scanr f e (x:xs))
-        = {scanr.2}
-        head (f x (foldr f e xs): scanr f e xs)
-        = {head.2}
-        f x (foldr f e xs)
-    Right:
-        foldr f e (x:xs)
-        = {foldr.2}
-        f x (foldr f e xs)
+P(xs) -> head (scanr f e xs) = foldr f e xs
+    Base Case: P([])
+        Left:
+            head (scanr f e [])
+            = {scanr.1}
+            head [e]
+            = {head.2}
+            e
+        Right:
+            foldr f e []
+            = {foldr.1}
+            e
+    Inductive Case: P(x:xs)
+        Left:
+            head (scanr f e (x:xs))
+            = {scanr.2}
+            head (f x (foldr f e xs): scanr f e xs)
+            = {head.2}
+            f x (foldr f e xs)
+        Right:
+            foldr f e (x:xs)
+            = {foldr.2}
+            f x (foldr f e xs)
 
-P(x) = add x y = add2 x y
-Case 1: P(Zero)
-    Left:
-        add Zero y
-        = {add.2}
-        y
-    Right:
-        add2 Zero y
-        = {add2.2}
-        y
-Case 2: P(Suc x)
-    Left:
-        add (Suc x) y
-        = {add.1}
-        Suc (add x y)
-    Right:
-        add2 (Suc x) y
-        = {add2.1}
-        add x (Suc y)
-        = {canvas announcement proof}
-        add (Suc y) x
-        = {add.1}
-        Suc (add y x)
-        = {canvas announcement proof}
-        Suc (add x y)
+P(x) -> add x y = add2 x y
+    Base Case: P(Zero)
+        Left:
+            add Zero y
+            = {add.2}
+            y
+        Right:
+            add2 Zero y
+            = {add2.2}
+            y
+    Inductive Case: P(Suc x)
+        Left:
+            add (Suc x) y
+            = {add.1}
+            Suc (add x y)
+        Right:
+            add2 (Suc x) y
+            = {add2.1}
+            add x (Suc y)
+            = {canvas announcement proof}
+            add (Suc y) x
+            = {add.1}
+            Suc (add y x)
+            = {canvas announcement proof}
+            Suc (add x y)
+
+P(xs) -> length (xs ++ ys) = add (length xs) (length ys)
+   Base Case: P([])
+        Left: 
+            length ([] ++ ys)
+            = {++.1}
+            length ys
+        Right:
+            add (length []) (length ys)
+            = {length.1}
+            add Zero (length ys)
+            = {add.2}
+            length ys
+    Inductive Case: P(x:xs)
+        Left:
+            length ((x:xs) ++ ys)
+            = {++.2}
+            length (x:(xs ++ ys))
+            = {length.2}
+            Suc (length (xs ++ ys))
+        Right:
+            add (length (x:xs)) (length ys)
+            = {length.2}
+            add (Suc (length xs)) (length ys)
+            = {add.1}
+            Suc (add (length xs) (length ys))
+            = {induction hypothesis P(xs)}
+            Suc (length (xs ++ ys))
+
+P(xs) -> reverse xs = foldl (flip (:)) [] xs
+    Base Case: P([])
+        Left:
+            reverse []
+            = {reverse.1}
+            []
+        Right:
+            foldl (flip (:)) [] []
+            = {foldl.1}
+            []
+    Inductive Case: P(x:xs)
+        Left:
+            reverse (x:xs)
+            = {reverse.2}
+            reverse xs ++ [x]
+        Right:
+            foldl (flip (:)) [] (x:xs)
+            = {foldl.2}
+            foldl (flip (:)) ((flip (:)) [] x) xs
+            = {flip.1}
+            foldl (flip (:)) (: [] x) xs *** NEED TO PULL THE x OUT OF e AS ++ x
+            
