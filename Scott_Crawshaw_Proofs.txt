@@ -1,4 +1,4 @@
-P(xs) -> head (scanr f e xs) = foldr f e xs
+A) P(xs) -> head (scanr f e xs) = foldr f e xs
     Base Case: P([])
         Left:
             head (scanr f e [])
@@ -22,7 +22,7 @@ P(xs) -> head (scanr f e xs) = foldr f e xs
             = {foldr.2}
             f x (foldr f e xs)
 
-P(x) -> add x y = add2 x y
+B) P(x) -> add x y = add2 x y
     Base Case: P(Zero)
         Left:
             add Zero y
@@ -48,7 +48,7 @@ P(x) -> add x y = add2 x y
             = {canvas announcement proof}
             Suc (add x y)
 
-P(xs) -> length (xs ++ ys) = add (length xs) (length ys)
+C) P(xs) -> length (xs ++ ys) = add (length xs) (length ys)
    Base Case: P([])
         Left: 
             length ([] ++ ys)
@@ -76,25 +76,58 @@ P(xs) -> length (xs ++ ys) = add (length xs) (length ys)
             = {induction hypothesis P(xs)}
             Suc (length (xs ++ ys))
 
-P(xs) -> reverse xs = foldl (flip (:)) [] xs
+D) P(xs) -> For all ys -> reverse xs ++ ys = foldl (flip (:)) ys xs
     Base Case: P([])
         Left:
-            reverse []
+            reverse [] ++ ys
             = {reverse.1}
-            []
+            [] ++ ys
+            = {++.1}
+            ys
         Right:
-            foldl (flip (:)) [] []
+            foldl (flip (:)) ys []
             = {foldl.1}
-            []
+            ys
+    
     Inductive Case: P(x:xs)
         Left:
-            reverse (x:xs)
+            reverse (x:xs) ++ ys
             = {reverse.2}
-            reverse xs ++ [x]
+            (reverse xs ++ [x]) ++ ys
+            = {Lecture 6, Slide 15}
+            reverse xs ++ ([x] ++ ys)
+            = {definition of :}
+            reverse xs ++ ((x:[]) ++ ys)
+            = {++.2}
+            reverse xs ++ x:([] ++ ys)
+            = {++.1}
+            reverse xs ++ (x:ys)
         Right:
-            foldl (flip (:)) [] (x:xs)
+            foldl (flip (:)) ys (x:xs)
             = {foldl.2}
-            foldl (flip (:)) ((flip (:)) [] x) xs
+            foldl (flip (:)) ((flip (:)) ys x) xs
             = {flip.1}
-            foldl (flip (:)) (: [] x) xs *** NEED TO PULL THE x OUT OF e AS ++ x
-            
+            foldl (flip (:)) (x:ys) xs
+            = {induction hypothesis}
+            reverse xs ++ (x:ys)
+
+E) P(x) -> evaluate f (Add x y) = evaluate f (Add y x)
+        Left:
+            evaluate f (Add x y)
+            = {evaluate.2}
+            add (evaluate f x) (evaluate f y)
+        Right:
+            evaluate f (Add y x)
+            = {evaluate.2}
+            add (evaluate f y) (evaluate f x)
+            = {canvas announcement}
+            add (evaluate f x) (evaluate f y)
+
+F) P(x) -> (evaluate f . replace g) x = evaluate (f . g) x
+    Base Case: P(Const x)
+        Left:
+
+
+I) In order for part A to apply to all xs, we must consider the case where xs is undefined.
+
+
