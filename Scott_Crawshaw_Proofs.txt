@@ -123,11 +123,116 @@ E) P(x) -> evaluate f (Add x y) = evaluate f (Add y x)
             = {canvas announcement}
             add (evaluate f x) (evaluate f y)
 
-F) P(x) -> (evaluate f . replace g) x = evaluate (f . g) x
+F) P(x) -> For all x -> (evaluate f . replace g) x = evaluate (f . g) x
+    Base Case: P(Const x)
+        Left: 
+            (evaluate f . replace g) (Const x)
+            = {definition of .}
+            evaluate f (replace g (Const x))
+            = {replace.1}
+            evaluate f (Const (g x))
+            = {evaluate.1}
+            f (g x)
+            = {definition of .}
+            (f.g) x
+        Right:
+            evaluate (f . g) (Const x)
+            = {evaluate.1}
+            (f.g) x
+    Inductive Case: P(Add x y)
+        Left:
+            (evaluate f . replace g) (Add x y)
+            = {definition of .}
+            evaluate f (replace g (Add x y))
+            = {replace.2}
+            evaluate f (Add (replace g x) (replace g y))
+            = {evaluate.2}
+            add (evaluate f (replace g x)) (evaluate f (replace g y))
+        Right:
+            evaluate (f . g) (Add x y)
+            = {evaluate.2}
+            add (evaluate (f . g) x) (evaluate (f . g) y)
+            = {induction hypothesis}
+            add ((evaluate f . replace g) x) ((evaluate f . replace g) y)
+            = {definition of .}
+            add (evaluate f (replace g x)) (evaluate f (replace g y))
+
+G) P(x) -> For all x -> length . gather x = evaluate (const (Suc Zero)) x
     Base Case: P(Const x)
         Left:
+            length . gather x
+            = {definition of .}
+            length (gather (Const x))
+            = {gather.1}
+            length x:[]
+            = {length.2}
+            Suc (length [])
+            = {length.1}
+            Suc Zero
+        Right:
+            evaluate (const (Suc Zero)) (Const x)
+            = {evaluate.1}
+            const (Suc Zero) x
+            = {const.1}
+            Suc Zero
+    Inductive Case: P(Add x y)
+        Left:
+            length . gather (Add x y)
+            = {definition of .}
+            length (gather (Add x y))
+            = {gather.2}
+            length (gather x ++ gather y)
+            = {Part c}
+            add (length (gather x)) (length (gather y))
+            = {definition of .}
+            add (length . gather x) (length . gather y)
+        Right:
+            evaluate (const (Suc Zero)) (Add x y)
+            = {evaluate.2}
+            add (evaluate (const (Suc Zero)) x) (evaluate (const (Suc Zero)) y)
+            = {induction hypothesis}
+            add (length . gather x) (length . gather y)
 
+H) P(x) -> For all x -> foldr add Zero . gather x = evaluate id x
+    Base Case: P(Const x)
+        Left:
+            foldr add Zero . gather (Const x)
+            = {definition of .}
+            foldr add Zero (gather (Const x))
+            = {gather.1}
+            foldr add Zero (x:[])
+            = {foldr.2}
+            add x (foldr add Zero [])
+            = {foldr.1}
+            add x Zero
+            = {canvas announcement}
+            add Zero x
+            = {add.2}
+            x
+        Right:
+            evaluate id (Const x)
+            = {evaluate.1}
+            id x
+            = {id.1}
+            x
+    Inductive Case: P(Add x y)
+        Left:
+            foldr add Zero . gather (Add x y)
+            = {definition of .}
+            foldr add Zero (gather (Add x y))
+            = {gather.2}
+            foldr add Zero (gather x ++ gather y)
+            = {definition of foldr}
+            add (foldr add Zero (gather x)) (foldr add Zero (gather y))
+        Right:
+            evaluate id (Add x y)
+            = {evaluate.2}
+            add (evaluate id x) (evaluate id y)
+            = {induction hypothesis}
+            add (foldr add Zero . gather x) (foldr add Zero . gather y)
+            = {definition of .}
+            add (foldr add Zero (gather x)) (foldr add Zero (gather y))
 
-I) In order for part A to apply to all xs, we must consider the case where xs is undefined.
+I) In order for part A to apply to all xs, we must consider the case where xs is an infite list. In this scenario, both scanr f e xs and foldr f e xs are non terminating. Another case we must consider is when xs is undefined. When that is the case, both of the expressions evauluate to undefined.
 
-
+J) Intuitivly, I believe that foldr f e is equivilant to foldl f e under the condition that the function f is associative. If f is associative, it does not matter whether you traverse the list from the left or the right, the result will be the same. However, I am unsure how to provide a proof of this condition.
